@@ -1,0 +1,175 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'dbo.ui'
+#
+# Created by: PyQt5 UI code generator 5.12
+#
+# WARNING! All changes made in this file will be lost!
+#import pandas as pd
+import os, re, unicodecsv as csv
+#import xlrd
+import csv
+from PyPDF2 import PdfFileReader, PdfFileWriter
+from PyQt5.QtCore import (QDir, QIODevice, QFile, QFileInfo, Qt, QTextStream,
+        QUrl)
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtGui
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QPushButton
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class Ui_MainWindow(QMainWindow, object):
+    def setupUi(self, MainWindow):
+        super().__init__()
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(459, 167)
+        MainWindow.setMinimumSize(QtCore.QSize(459, 167))
+        MainWindow.setMaximumSize(QtCore.QSize(459, 167))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("icon/icon_2.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        MainWindow.setWindowIcon(icon)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
+        self.tabWidget.setGeometry(QtCore.QRect(10, 10, 441, 151))
+        self.tabWidget.setTabPosition(QtWidgets.QTabWidget.West)
+        self.tabWidget.setObjectName("tabWidget")
+        self.tab = QtWidgets.QWidget()
+        self.tab.setObjectName("tab")
+        self.label = QtWidgets.QLabel(self.tab)
+        self.label.setGeometry(QtCore.QRect(100, 22, 241, 16))
+        self.label.setText("")
+        self.label.setObjectName("label")
+        self.pushButton = QtWidgets.QPushButton(self.tab)
+        self.pushButton.setGeometry(QtCore.QRect(20, 20, 61, 23))
+        self.pushButton.setObjectName("pushButton")
+        self.pushButton_2 = QtWidgets.QPushButton(self.tab)
+        self.pushButton_2.setGeometry(QtCore.QRect(330, 110, 75, 23))
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.tabWidget.addTab(self.tab, "")
+        self.tab_2 = QtWidgets.QWidget()
+        self.tab_2.setObjectName("tab_2")
+        self.pushButton_3 = QtWidgets.QPushButton(self.tab_2)
+        self.pushButton_3.setGeometry(QtCore.QRect(10, 14, 61, 23))
+        self.pushButton_3.setObjectName("pushButton_3")
+        self.label_2 = QtWidgets.QLabel(self.tab_2)
+        self.label_2.setGeometry(QtCore.QRect(80, 16, 331, 16))
+        self.label_2.setText("")
+        self.label_2.setObjectName("label_2")
+        self.pushButton_4 = QtWidgets.QPushButton(self.tab_2)
+        self.pushButton_4.setGeometry(QtCore.QRect(10, 56, 91, 23))
+        self.pushButton_4.setObjectName("pushButton_4")
+        self.label_3 = QtWidgets.QLabel(self.tab_2)
+        self.label_3.setGeometry(QtCore.QRect(110, 60, 301, 16))
+        self.label_3.setText("")
+        self.label_3.setObjectName("label_3")
+        self.pushButton_5 = QtWidgets.QPushButton(self.tab_2)
+        self.pushButton_5.setGeometry(QtCore.QRect(360, 120, 51, 23))
+        self.pushButton_5.setObjectName("pushButton_5")
+        self.tabWidget.addTab(self.tab_2, "")
+        MainWindow.setCentralWidget(self.centralwidget)
+        
+        
+        self.pushButton.clicked.connect(self.openFileDialog)
+        self.pushButton_2.clicked.connect(self.splitFiles)
+        self.pushButton_3.clicked.connect(self.open_csv)
+        self.pushButton_4.clicked.connect(self.open_directory)
+        self.pushButton_5.clicked.connect(self.file_rename_new_4)
+        
+        
+        self.retranslateUi(MainWindow)
+        self.tabWidget.setCurrentIndex(0)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "dbo_tools v1.0.1."))
+        self.pushButton.setText(_translate("MainWindow", "Browse"))
+        self.pushButton_2.setText(_translate("MainWindow", "Split"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Split"))
+        self.pushButton_3.setText(_translate("MainWindow", "Open csv"))
+        self.pushButton_4.setText(_translate("MainWindow", "Open directory"))
+        self.pushButton_5.setText(_translate("MainWindow", "Rename"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Rename"))
+
+        
+    def openFileDialog(self):
+        filename = QFileDialog.getOpenFileName(self, 'Open File', '/', "*.pdf")#  ,"*.pdf", "CSV files (*.csv)"
+        
+        if filename[0]:
+            self.label.setText(filename[0])
+            
+        
+   
+    def splitFiles(self):
+        pdf_file = open(self.label.text(),'rb')
+        pdf_reader = PdfFileReader(pdf_file)
+        s_pdf_files = self.label.text()
+        s_pdf_files_z = s_pdf_files.rstrip(".pdf")
+        
+        
+        pageNumbers = pdf_reader.getNumPages()
+        
+        for i in range (pageNumbers):
+            pdf_writer = PdfFileWriter()
+            pdf_writer.addPage(pdf_reader.getPage(i))
+            split_motive = open(s_pdf_files_z + '_' + str(i+1) + '.pdf','wb')
+            pdf_writer.write(split_motive)
+            split_motive.close()
+        
+        pdf_file.close()       
+        
+    
+    
+    def open_csv(self):
+        file_csv = QFileDialog.getOpenFileName(self, 'Open File', '/', "*.csv")#  ,"*.pdf", "CSV files (*.csv)"
+       
+        
+        if file_csv[0]:
+            self.label_2.setText(file_csv[0])        
+     
+     
+    def open_directory(self):   
+        open_directory = QFileDialog.getExistingDirectory(self, "Find Files", QDir.currentPath())  
+        
+        if open_directory:
+            self.label_3.setText(open_directory)    
+    
+      
+           
+    
+
+
+
+
+    def file_rename_new_4(self):
+        IDs = {}
+        with open(self.label_2.text(),'r') as csvfile:
+            timeReader = csv.reader(csvfile, delimiter = ';')
+            # build dictionary with associated IDs
+            for row in timeReader:
+                IDs[row[0]] = row[1]
+        # move files
+        path = self.label_3.text()
+        tmpPath = self.label_3.text()
+        for oldname in os.listdir(path):
+            # ignore files in path which aren't in the csv file
+            if oldname in IDs:
+                try:
+                    os.rename(os.path.join(path, oldname), os.path.join(tmpPath, IDs[oldname]))
+                except:
+                    print ('File ' + oldname + ' could not be renamed to ' + IDs[oldname] + '!')       
+        
+
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
+    rename_pdfs()
